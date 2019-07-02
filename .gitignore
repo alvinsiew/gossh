@@ -1,3 +1,5 @@
 ## go module
 go.mod
+go.sum
+gossh.db
 
