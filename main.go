@@ -1,41 +1,74 @@
 package main
 
 import (
-	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
-	"time"
 
 	bolt "go.etcd.io/bbolt"
 )
 
-// Entry type
-type Entry struct {
-	Host      string `json:"host"`
-	IPaddress string `json:"ip"`
-}
-
 func main() {
+	addAction := flag.String("add", "", "Adding new Hosts")
+	listAction := flag.Bool("l", false, "List all hosts")
+
+	flag.Parse()
+
 	db, err := setupDB()
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
+	
 
-	err = addHost(db, "host_abc", "192.168.1.2")
-	if err != nil {
-		log.Fatal(err)
-	}
+	fmt.Println("host:", *addAction)
 
-	err = addHost(db, "gms-test", "192.168.2.2")
-	if err != nil {
-		log.Fatal(err)
-	}
+	listBool := *listAction
 
-	err = addHost(db, "testabc", "192.168.3.2")
-	if err != nil {
-		log.Fatal(err)
+	fmt.Println("hello: ",listBool)
+	 
+	if listBool == true {
+		listBucket(db, "GOSSH")
 	}
+	// abc := flag.Args()
+	// fmt.Println(len(abc))
+	
+	// fmt.Println(abc[1])
+
+
+
+	// if lenArgument == 0 {
+	// 	listBucket(db, "GOSSH")
+	// }
+
+	// fmt.Println(lenArgument)
+	// if lenArgument > 0 {
+	// 	var firstArg string
+	// 	firstArg = os.Args[1]
+	// 	if firstArg == "add" {
+	// 		if lenArgument != 3 {
+	// 			fmt.Println("For add parameter, host and ip address are require only.")
+	// 			os.Exit(1)
+	// 		}
+	// 	}
+	// }
+	// var secondArg string
+	// secondArg = os.Args[2]
+
+	// err = addHost(db, firstArg, secondArg)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// err = addHost(db, "gms-test", "192.168.2.2")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// err = addHost(db, "testabc", "192.168.3.2")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	// err = addEntry(db, "testabc", "192.168.2.3", time.Now())
 	// if err != nil {
@@ -49,7 +82,7 @@ func main() {
 	// }
 
 	// err = db.View(func(tx *bolt.Tx) error {
-	// 	b := tx.Bucket([]byte("GOSSH")).Bucket([]byte("HOSTS"))
+	// 	b := tx.Bucket([]byte("GOSSH"))
 	// 	b.ForEach(func(k, v []byte) error {
 	// 		fmt.Println(string(k), string(v))
 	// 		return nil
@@ -60,29 +93,20 @@ func main() {
 	// 	log.Fatal(err)
 	// }
 
-	err = db.View(func(tx *bolt.Tx) error {
+	// err = db.View(func(tx *bolt.Tx) error {
 
-		c := tx.Bucket([]byte("GOSSH"))
-		// find := c.Seek([]byte
-		findHost := c.Get([]byte("testabc"))
-		fmt.Printf("Ip address is %s\n", findHost)
-		// min := []byte(time.Now().AddDate(0, 0, -7).Format(time.RFC3339))
-		// max := []byte(time.Now().AddDate(0, 0, 0).Format(time.RFC3339))
-		// for k, v := c.Seek(min); k != nil && bytes.Compare(k, max) <= 0; k, v = c.Next() {
-		// 	fmt.Println(string(k), string(v))
-		// }
-		// c.Bucket([]byte("HOSTS"))).Get
-		// findHost := c.
-		// fmt.Println(c.Seek(findHost))
+	// 	c := tx.Bucket([]byte("GOSSH"))
+	// 	findHost := c.Get([]byte("testabc"))
+	// 	fmt.Printf("Ip address is %s\n", findHost)
 
-		// for k, v := c.Seek()
-		return nil
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+	// 	return nil
+	// })
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
+// Function for setting up DB and Bucket
 func setupDB() (*bolt.DB, error) {
 	db, err := bolt.Open("gossh.db", 0600, nil)
 	if err != nil {
@@ -104,10 +128,11 @@ func setupDB() (*bolt.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not set up buckets, %v", err)
 	}
-	fmt.Println("DB Setup Done")
+	// fmt.Println("DB Setup Done")
 	return db, nil
 }
 
+// Function for adding new record
 func addHost(db *bolt.DB, host string, ip string) error {
 	err := db.Update(func(tx *bolt.Tx) error {
 		err := tx.Bucket([]byte("GOSSH")).Put([]byte(host), []byte(ip))
@@ -120,20 +145,18 @@ func addHost(db *bolt.DB, host string, ip string) error {
 	return err
 }
 
-func addEntry(db *bolt.DB, host string, ip string, date time.Time) error {
-	entry := Entry{Host: host, IPaddress: ip}
-	entryBytes, err := json.Marshal(entry)
-	if err != nil {
-		return fmt.Errorf("could not marshal entry json: %v", err)
-	}
-	err = db.Update(func(tx *bolt.Tx) error {
-		err := tx.Bucket([]byte("GOSSH")).Bucket([]byte("HOSTS")).Put([]byte(date.Format(time.RFC3339)), entryBytes)
-		if err != nil {
-			return fmt.Errorf("could not insert entry: %v", err)
-		}
+// Function for listings all hosts
+func listBucket(db *bolt.DB, b string) {
 
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(b))
+		b.ForEach(func(k, v []byte) error {
+			fmt.Println(string(k), string(v))
+			return nil
+		})
 		return nil
 	})
-	fmt.Println("Added Entry")
-	return err
+	if err != nil {
+		log.Fatal(err)
+	}
 }
