@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 
 	bolt "go.etcd.io/bbolt"
 )
@@ -19,7 +18,8 @@ type Config struct {
 }
 
 func main() {
-	addParam := flag.Bool("add", false, "Adding new Hosts")
+	addParam := flag.Bool("add", false, "Flag for adding new hosts")
+	hostParam := flag.String("host", "", "Hostname")
 	ipParam := flag.String("ip", "", "Adding or changing IP address for host")
 	userParam := flag.String("user", "", "User")
 	portParam := flag.String("port", "22", "Update Port Number. Default(22)")
@@ -42,16 +42,16 @@ func main() {
 	if listBool == true {
 		listBucket(db, "GOSSH", "CONFIG")
 	} else if addBool == true {
-		hostArray := flag.Args()
-		if len(hostArray) <=0 {
-			fmt.Println("Hostname is require")
-			os.Exit(1)
-		}
-		host := hostArray[0]
-		fmt.Println(host)
+		// hostParam := flag.Args()
+		// if len(hostArray) <= 0 {
+		// 	fmt.Println("Hostname is require")
+		// 	os.Exit(1)
+		// }
+		// host := hostArray[0]
+		// fmt.Println(host)
 		//
 
-		err = addConfig(db, *ipParam, *userParam, *portParam, *keyParam, host)
+		err = addConfig(db, *hostParam, *ipParam, *userParam, *portParam, *keyParam)
 		if err != nil {
 			// log.Fatal(err)
 			fmt.Printf("Error: %v", err)
@@ -102,7 +102,7 @@ func listBucket(db *bolt.DB, b string, c string) {
 }
 
 // Function for updating database
-func addConfig(db *bolt.DB, ip string, user string, port string, key string, hostname string) error {
+func addConfig(db *bolt.DB, hostname string, ip string, user string, port string, key string) error {
 	config := Config{IP: ip, User: user, PortNumber: port, Key: key}
 	configBytes, err := json.Marshal(config)
 	if err != nil {
