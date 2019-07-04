@@ -160,3 +160,21 @@ func listBucket(db *bolt.DB, b string) {
 		log.Fatal(err)
 	}
 }
+
+func addEntry(db *bolt.DB, ip string, port string, hostname string) error {
+	entry := Entry{Host: host, IPaddress: ip}
+	entryBytes, err := json.Marshal(entry)
+	if err != nil {
+		return fmt.Errorf("could not marshal entry json: %v", err)
+	}
+	err = db.Update(func(tx *bolt.Tx) error {
+		err := tx.Bucket([]byte("GOSSH")).Bucket([]byte("CONFIG")).Put([]byte(date.Format(time.RFC3339)), entryBytes)
+		if err != nil {
+			return fmt.Errorf("could not insert entry: %v", err)
+		}
+
+		return nil
+	})
+	fmt.Println("Added Entry")
+	return err
+}
