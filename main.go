@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 
 	bolt "go.etcd.io/bbolt"
 )
@@ -18,8 +19,12 @@ type Config struct {
 }
 
 func main() {
-	addAction := flag.String("add", "", "Adding new Hosts")
-	listAction := flag.Bool("l", false, "List all hosts")
+	addParam := flag.Bool("add", false, "Adding new Hosts")
+	ipParam := flag.String("ip", "", "Adding or changing IP address for host")
+	userParam := flag.String("user", "", "User")
+	portParam := flag.String("port", "22", "Update Port Number. Default(22)")
+	keyParam := flag.String("key", "", "Setup key to for server connection. Using default key if not specific.")
+	listParam := flag.Bool("l", false, "List all hosts config")
 
 	flag.Parse()
 
@@ -29,87 +34,29 @@ func main() {
 	}
 	defer db.Close()
 
-	fmt.Println("host:", *addAction)
+	// fmt.Println("host:", *addParam, *userParam, *portParam, *ipParam, *keyParam)
 
-	listBool := *listAction
-
-	fmt.Println("hello: ", listBool)
+	listBool := *listParam
+	addBool := *addParam
 
 	if listBool == true {
-		listBucket(db, "GOSSH")
+		listBucket(db, "GOSSH", "CONFIG")
+	} else if addBool == true {
+		hostArray := flag.Args()
+		if len(hostArray) <=0 {
+			fmt.Println("Hostname is require")
+			os.Exit(1)
+		}
+		host := hostArray[0]
+		fmt.Println(host)
+		//
+
+		err = addConfig(db, *ipParam, *userParam, *portParam, *keyParam, host)
+		if err != nil {
+			// log.Fatal(err)
+			fmt.Printf("Error: %v", err)
+		}
 	}
-	// abc := flag.Args()
-	// fmt.Println(len(abc))
-
-	// fmt.Println(abc[1])
-
-	// if lenArgument == 0 {
-	// 	listBucket(db, "GOSSH")
-	// }
-
-	// fmt.Println(lenArgument)
-	// if lenArgument > 0 {
-	// 	var firstArg string
-	// 	firstArg = os.Args[1]
-	// 	if firstArg == "add" {
-	// 		if lenArgument != 3 {
-	// 			fmt.Println("For add parameter, host and ip address are require only.")
-	// 			os.Exit(1)
-	// 		}
-	// 	}
-	// }
-	// var secondArg string
-	// secondArg = os.Args[2]
-
-	// err = addHost(db, firstArg, secondArg)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	err = addConfig(db, "192.168.2.25", "centos", "22", "/home/alvin/.ssh/id_rsa", "gosshserver")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// err = addHost(db, "testabc", "192.168.3.2")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// err = addEntry(db, "testabc", "192.168.2.3", time.Now())
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// Manipulating the date
-	// err = addEntry(db, "testcde", "172.134.2.32", time.Now().AddDate(0, 0, -2))
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// err = db.View(func(tx *bolt.Tx) error {
-	// 	b := tx.Bucket([]byte("GOSSH"))
-	// 	b.ForEach(func(k, v []byte) error {
-	// 		fmt.Println(string(k), string(v))
-	// 		return nil
-	// 	})
-	// 	return nil
-	// })
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// err = db.View(func(tx *bolt.Tx) error {
-
-	// 	c := tx.Bucket([]byte("GOSSH"))
-	// 	findHost := c.Get([]byte("testabc"))
-	// 	fmt.Printf("Ip address is %s\n", findHost)
-
-	// 	return nil
-	// })
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 }
 
 // Function for setting up DB and Bucket
@@ -124,7 +71,7 @@ func setupDB() (*bolt.DB, error) {
 		if err != nil {
 			return fmt.Errorf("could not create root bucket: %v", err)
 		}
-		_, err = root.CreateBucketIfNotExists([]byte("HOSTS"))
+		_, err = root.CreateBucketIfNotExists([]byte("CONFIG"))
 		if err != nil {
 			return fmt.Errorf("could not create weight bucket: %v", err)
 		}
@@ -138,24 +85,11 @@ func setupDB() (*bolt.DB, error) {
 	return db, nil
 }
 
-// Function for adding new record
-func addHost(db *bolt.DB, host string, ip string) error {
-	err := db.Update(func(tx *bolt.Tx) error {
-		err := tx.Bucket([]byte("GOSSH")).Put([]byte(host), []byte(ip))
-		if err != nil {
-			return fmt.Errorf("could not insert hosts table: %v", err)
-		}
-		return nil
-	})
-	fmt.Println("Added host")
-	return err
-}
-
 // Function for listings all hosts
-func listBucket(db *bolt.DB, b string) {
+func listBucket(db *bolt.DB, b string, c string) {
 
 	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(b))
+		b := tx.Bucket([]byte(b)).Bucket([]byte(c))
 		b.ForEach(func(k, v []byte) error {
 			fmt.Println(string(k), string(v))
 			return nil
@@ -167,7 +101,7 @@ func listBucket(db *bolt.DB, b string) {
 	}
 }
 
-// Function for
+// Function for updating database
 func addConfig(db *bolt.DB, ip string, user string, port string, key string, hostname string) error {
 	config := Config{IP: ip, User: user, PortNumber: port, Key: key}
 	configBytes, err := json.Marshal(config)
@@ -182,6 +116,6 @@ func addConfig(db *bolt.DB, ip string, user string, port string, key string, hos
 
 		return nil
 	})
-	fmt.Printf("Added Config for %v", hostname)
+	fmt.Printf("Added Config for %v\n", hostname)
 	return err
 }
