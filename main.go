@@ -1,12 +1,21 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 
 	bolt "go.etcd.io/bbolt"
 )
+
+// Config struct which contain hosts infomation
+type Config struct {
+	IP         string `json:"ip"`
+	User       string `json:"user"`
+	PortNumber string `json:"port"`
+	Key        string `json:"key"`
+}
 
 func main() {
 	addAction := flag.String("add", "", "Adding new Hosts")
@@ -19,23 +28,20 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	
 
 	fmt.Println("host:", *addAction)
 
 	listBool := *listAction
 
-	fmt.Println("hello: ",listBool)
-	 
+	fmt.Println("hello: ", listBool)
+
 	if listBool == true {
 		listBucket(db, "GOSSH")
 	}
 	// abc := flag.Args()
 	// fmt.Println(len(abc))
-	
+
 	// fmt.Println(abc[1])
-
-
 
 	// if lenArgument == 0 {
 	// 	listBucket(db, "GOSSH")
@@ -60,10 +66,10 @@ func main() {
 	// 	log.Fatal(err)
 	// }
 
-	// err = addHost(db, "gms-test", "192.168.2.2")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	err = addConfig(db, "192.168.2.25", "centos", "22", "/home/alvin/.ssh/id_rsa", "gosshserver")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// err = addHost(db, "testabc", "192.168.3.2")
 	// if err != nil {
@@ -161,20 +167,21 @@ func listBucket(db *bolt.DB, b string) {
 	}
 }
 
-func addEntry(db *bolt.DB, ip string, port string, hostname string) error {
-	entry := Entry{Host: host, IPaddress: ip}
-	entryBytes, err := json.Marshal(entry)
+// Function for
+func addConfig(db *bolt.DB, ip string, user string, port string, key string, hostname string) error {
+	config := Config{IP: ip, User: user, PortNumber: port, Key: key}
+	configBytes, err := json.Marshal(config)
 	if err != nil {
-		return fmt.Errorf("could not marshal entry json: %v", err)
+		return fmt.Errorf("could not marshal config json: %v", err)
 	}
 	err = db.Update(func(tx *bolt.Tx) error {
-		err := tx.Bucket([]byte("GOSSH")).Bucket([]byte("CONFIG")).Put([]byte(date.Format(time.RFC3339)), entryBytes)
+		err := tx.Bucket([]byte("GOSSH")).Bucket([]byte("CONFIG")).Put([]byte(hostname), configBytes)
 		if err != nil {
-			return fmt.Errorf("could not insert entry: %v", err)
+			return fmt.Errorf("could not insert config: %v", err)
 		}
 
 		return nil
 	})
-	fmt.Println("Added Entry")
+	fmt.Printf("Added Config for %v", hostname)
 	return err
 }
