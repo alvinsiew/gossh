@@ -3,7 +3,7 @@ package sshclient
 import (
 	"io/ioutil"
 	"net"
-	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -66,30 +66,30 @@ func TerminalConn(user string, keyPath string, ipAddr string, port string) {
 
 	fileDescriptor := int(os.Stdin.Fd())
 
+	// terminal connected to the given file descriptor into raw mode and returns the previous state of the terminal so that it can be restored.
 	if terminal.IsTerminal(fileDescriptor) {
 		originalState, err := terminal.MakeRaw(fileDescriptor)
 		if err != nil {
-			fmt.Println("erro1")
+			log.Fatalf("Connect terminal to file descriptor in raw mode failed: %s", err)
 		}
 		defer terminal.Restore(fileDescriptor, originalState)
 
 		termWidth, termHeight, err := terminal.GetSize(fileDescriptor)
 		if err != nil {
-			fmt.Println("erro1")
+			log.Fatalf("Getting terminal size failed: %s", err)
 		}
 
 		err = session.RequestPty("xterm-256color", termHeight, termWidth, modes)
 		if err != nil {
-			fmt.Println("erro1")
+			log.Fatalf("Request Pty failed: %s", err)
 		}
 	}
 
+	// Starts a login shell on the remote host
 	err = session.Shell()
 	if err != nil {
-		fmt.Println("erro1")
+		log.Fatalf("Starts a login shell failed: %s", err)
 	}
 
-	// You should now be connected via SSH with a fully-interactive terminal
-	// This call blocks until the user exits the session (e.g. via CTRL + D)
 	session.Wait()
 }
