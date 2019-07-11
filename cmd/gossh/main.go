@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/alvinsiew/gossh"
+	"github.com/alvinsiew/gossh/internal/gossh"
 )
 
 func main() {
