@@ -43,11 +43,11 @@ func SetupDB(dbFile string, rootBucket string, bucket string) (*bolt.DB, error) 
 }
 
 // ListBucket for listings all hosts
-func ListBucket(db *bolt.DB, b string, c string) {
+func ListBucket(db *bolt.DB, rootBucket string, bucket string) {
 
 	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(b)).Bucket([]byte(c))
-		b.ForEach(func(k, v []byte) error {
+		rootBucket := tx.Bucket([]byte(rootBucket)).Bucket([]byte(bucket))
+		rootBucket.ForEach(func(k, v []byte) error {
 			fmt.Println(string(k), string(v))
 			return nil
 		})
@@ -75,4 +75,34 @@ func AddHosts(db *bolt.DB, rootBucket string, bucket string, hostname string, ip
 	})
 	fmt.Printf("Added %v for %v\n", bucket, hostname)
 	return err
+}
+
+// FindHost search for host detail
+func FindHost(db *bolt.DB, rootBucket string, bucket string, host string) {
+
+		// fmt.Printf("Test %v\n", rootBucket)
+	err := db.View(func(tx *bolt.Tx) error {
+		hostDetails := tx.Bucket([]byte(rootBucket)).Bucket([]byte(bucket)).Get([]byte(host))
+
+		// c := tx.Bucket([]byte(rootBucket))
+		// fmt.Println(&c)
+		// find := c.Seek([]byte
+		// findHost := c.Get([]byte(host))
+		// fmt.Println(findHost)
+		fmt.Printf("%s\n", hostDetails)
+		// min := []byte(time.Now().AddDate(0, 0, -7).Format(time.RFC3339))
+		// max := []byte(time.Now().AddDate(0, 0, 0).Format(time.RFC3339))
+		// for k, v := c.Seek(min); k != nil && bytes.Compare(k, max) <= 0; k, v = c.Next() {
+		// 	fmt.Println(string(k), string(v))
+		// }
+		// c.Bucket([]byte("HOSTS"))).Get
+		// findHost := c.
+		// fmt.Println(c.Seek(findHost))
+
+		// for k, v := c.Seek()
+		return nil
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 }

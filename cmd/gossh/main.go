@@ -31,6 +31,7 @@ func main() {
 	}
 	defer db.Close()
 
+	gossh.FindHost(db, "GOSSH", "HOSTS", "testdb")
 	// fmt.Println("host:", *addParam, *userParam, *portParam, *ipParam, *keyParam)
 
 	listBool := *listParam
