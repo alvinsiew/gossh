@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/alvinsiew/gossh/pkg/boltdb"
+	"github.com/alvinsiew/gossh"
 )
 
 func main() {
@@ -24,19 +24,19 @@ func main() {
 
 	flag.Parse()
 
-	db, err := boltdb.SetupDB(gosshDB, rootBucket, bucket)
+	db, err := gossh.SetupDB(gosshDB, rootBucket, bucket)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	fmt.Println("host:", *addParam, *userParam, *portParam, *ipParam, *keyParam)
+	// fmt.Println("host:", *addParam, *userParam, *portParam, *ipParam, *keyParam)
 
 	listBool := *listParam
 	addBool := *addParam
 
 	if listBool == true {
-		boltdb.ListBucket(db, rootBucket, bucket)
+		gossh.ListBucket(db, rootBucket, bucket)
 	} else if addBool == true {
 		// hostParam := flag.Args()
 		// if len(hostArray) <= 0 {
@@ -47,10 +47,10 @@ func main() {
 		// fmt.Println(host)
 		//
 
-		err = boltdb.AddHosts(db, rootBucket, bucket, *hostParam, *ipParam, *userParam, *portParam, *keyParam)
+		err = gossh.AddHosts(db, rootBucket, bucket, *hostParam, *ipParam, *userParam, *portParam, *keyParam)
 		if err != nil {
 			// log.Fatal(err)
-			fmt.Printf("Error: %v", err)
+			fmt.Printf("Error: %v\n", err)
 		}
 	}
 }
