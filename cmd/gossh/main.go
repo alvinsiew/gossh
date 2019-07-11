@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/alvinsiew/gossh"
 )
@@ -38,15 +39,10 @@ func main() {
 	if listBool == true {
 		gossh.ListBucket(db, rootBucket, bucket)
 	} else if addBool == true {
-		// hostParam := flag.Args()
-		// if len(hostArray) <= 0 {
-		// 	fmt.Println("Hostname is require")
-		// 	os.Exit(1)
-		// }
-		// host := hostArray[0]
-		// fmt.Println(host)
-		//
-
+		if *hostParam == "" {
+			fmt.Println("Hostname is require")
+			os.Exit(1)
+		}
 		err = gossh.AddHosts(db, rootBucket, bucket, *hostParam, *ipParam, *userParam, *portParam, *keyParam)
 		if err != nil {
 			// log.Fatal(err)
