@@ -31,9 +31,6 @@ func main() {
 	}
 	defer db.Close()
 
-	// gossh.FindHost(db, "GOSSH", "HOSTS", "testdb")
-	// fmt.Println("host:", *addParam, *userParam, *portParam, *ipParam, *keyParam)
-
 	if *listParam == true {
 		gossh.ListBucket(db, rootBucket, bucket)
 	} else if *addParam == true {
@@ -43,7 +40,6 @@ func main() {
 		}
 		err = gossh.AddHosts(db, rootBucket, bucket, *hostParam, *ipParam, *userParam, *portParam, *keyParam)
 		if err != nil {
-			// log.Fatal(err)
 			fmt.Printf("Error: %v\n", err)
 		}
 	} else if *connParam == true {
@@ -51,7 +47,6 @@ func main() {
 		if n == 0 {
 			fmt.Printf("No hostname to connect\n")
 			os.Exit(1)
-			
 		}
 		host := flag.Args()[0]
 		result := gossh.FindHost(db, rootBucket, bucket, host)
