@@ -75,7 +75,7 @@ func AddHosts(db *bolt.DB, rootBucket string, bucket string, hostname string, ip
 
 		return nil
 	})
-	fmt.Printf("Added %v for %v\n", bucket, hostname)
+	fmt.Printf("Updated %v for %v\n", bucket, hostname)
 	return err
 }
 

@@ -14,14 +14,14 @@ func main() {
 	bucket := "HOSTS"
 	gosshDB := "gossh.db"
 
-	addParam := flag.Bool("add", false, "Flag for adding new hosts")
+	addParam := flag.Bool("add", false, "Add host:\nUsage: gossh -host <hostname | mandatory> -ip <ip address | mand")
 	hostParam := flag.String("host", "", "Hostname")
 	ipParam := flag.String("ip", "", "Adding or changing IP address for host")
 	userParam := flag.String("user", "", "User")
 	portParam := flag.String("port", "22", "Update Port Number. Default(22)")
 	keyParam := flag.String("key", "", "Setup key to for server connection. Using default key if not specific.")
 	listParam := flag.Bool("l", false, "List all hosts config")
-	connParam := flag.Bool("conn", false, "Connection to server")
+	connParam := flag.Bool("conn", false, "Connection to server:\nUsage: gossh -conn <hostname>\n")
 
 	flag.Parse()
 
