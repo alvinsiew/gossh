@@ -14,7 +14,7 @@ func main() {
 	bucket := "HOSTS"
 	gosshDB := "gossh.db"
 
-	addParam := flag.Bool("add", false, "Add host:\nUsage: gossh -host <hostname | mandatory> -ip <ip address | mand")
+	addParam := flag.Bool("add", false, "Add host:\nUsage: gossh -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>")
 	hostParam := flag.String("host", "", "Hostname")
 	ipParam := flag.String("ip", "", "Adding or changing IP address for host")
 	userParam := flag.String("user", "", "User")
