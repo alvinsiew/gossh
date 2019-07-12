@@ -47,8 +47,12 @@ func main() {
 			fmt.Printf("Error: %v\n", err)
 		}
 	} else if *connParam == true {
-		arg := flag.Args()
-		fmt.Println(arg)
+		n := len(flag.Args())
+		if n == 0 {
+			fmt.Printf("No hostname to connect\n")
+			os.Exit(1)
+			
+		}
 		host := flag.Args()[0]
 		result := gossh.FindHost(db, rootBucket, bucket, host)
 		result.SSSHConn()

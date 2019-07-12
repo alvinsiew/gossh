@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	bolt "go.etcd.io/bbolt"
 	"github.com/alvinsiew/gossh/pkg/sshclient"
@@ -84,7 +85,8 @@ func FindHost(db *bolt.DB, rootBucket string, bucket string, host string) Config
 	err := db.View(func(tx *bolt.Tx) error {
 		hostDetails := tx.Bucket([]byte(rootBucket)).Bucket([]byte(bucket)).Get([]byte(host))
 		if hostDetails == nil {
-			fmt.Printf("Unable to find %s\n", host)
+			fmt.Printf("Unable to find host %s\n", host)
+			os.Exit(1)
 		}
 		err := json.Unmarshal([]byte(hostDetails), &c)
 		if err != nil{
