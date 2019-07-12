@@ -15,7 +15,7 @@ type Config struct {
 	IP         string `json:"ip"`
 	User       string `json:"user"`
 	PortNumber string `json:"port"`
-	Key        string `json:"key"`
+	Key        []byte `json:"key"`
 }
 
 // SetupDB for setting up root bucket and bucket
@@ -61,7 +61,7 @@ func ListBucket(db *bolt.DB, rootBucket string, bucket string) {
 }
 
 // AddHosts for updating database with hosts informations
-func AddHosts(db *bolt.DB, rootBucket string, bucket string, hostname string, ip string, user string, port string, key string) error {
+func AddHosts(db *bolt.DB, rootBucket string, bucket string, hostname string, ip string, user string, port string, key []byte) error {
 	config := Config{IP: ip, User: user, PortNumber: port, Key: key}
 	configBytes, err := json.Marshal(config)
 	if err != nil {

@@ -6,24 +6,26 @@ import (
 	"log"
 	"os"
 	"strings"
+	// "fmt"
+	// "reflect"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
 // TerminalConn is use for making ssh connection with pty request
-func TerminalConn(user string, keyPath string, ipAddr string, port string) {
+func TerminalConn(user string, keyPath []byte, ipAddr string, port string) {
 	// Joining ip address and port as a strings
 	value := []string{}
 	value = append(value, ipAddr)
 	value = append(value, port)
 	ipPort := strings.Join(value, ":")
 
-	key, err := ioutil.ReadFile(keyPath)
-	if err != nil {
-		panic(err)
-	}
-	signer, err := ssh.ParsePrivateKey([]byte(key))
+	// key, err := ioutil.ReadFile(keyPath)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	signer, err := ssh.ParsePrivateKey([]byte(keyPath))
 	if err != nil {
 		panic(err)
 	}
@@ -31,6 +33,7 @@ func TerminalConn(user string, keyPath string, ipAddr string, port string) {
 	config := &ssh.ClientConfig{
 		User: user,
 		Auth: []ssh.AuthMethod{
+			// ssh.Password("your_password"),
 			ssh.PublicKeys(signer),
 		},
 		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
@@ -92,4 +95,13 @@ func TerminalConn(user string, keyPath string, ipAddr string, port string) {
 	}
 
 	session.Wait()
+}
+
+// KeyToBytes convert key to bytes
+func KeyToBytes(keyPath string) []byte {
+	key, err := ioutil.ReadFile(keyPath)
+	if err != nil {
+		panic(err)
+	}
+	return key
 }
