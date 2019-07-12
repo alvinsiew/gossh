@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-
 	rootBucket := "GOSSH"
 	bucket := "HOSTS"
 	gosshDB := "gossh.db"
@@ -22,6 +21,7 @@ func main() {
 	portParam := flag.String("port", "22", "Update Port Number. Default(22)")
 	keyParam := flag.String("key", "", "Setup key to for server connection. Using default key if not specific.")
 	listParam := flag.Bool("l", false, "List all hosts config")
+	connParam := flag.Bool("conn", false, "Connection to server")
 
 	flag.Parse()
 
@@ -31,15 +31,12 @@ func main() {
 	}
 	defer db.Close()
 
-	gossh.FindHost(db, "GOSSH", "HOSTS", "testdb")
+	// gossh.FindHost(db, "GOSSH", "HOSTS", "testdb")
 	// fmt.Println("host:", *addParam, *userParam, *portParam, *ipParam, *keyParam)
 
-	listBool := *listParam
-	addBool := *addParam
-
-	if listBool == true {
+	if *listParam == true {
 		gossh.ListBucket(db, rootBucket, bucket)
-	} else if addBool == true {
+	} else if *addParam == true {
 		if *hostParam == "" {
 			fmt.Println("Hostname is require")
 			os.Exit(1)
@@ -49,5 +46,11 @@ func main() {
 			// log.Fatal(err)
 			fmt.Printf("Error: %v\n", err)
 		}
+	} else if *connParam == true {
+		arg := flag.Args()
+		fmt.Println(arg)
+		host := flag.Args()[0]
+		result := gossh.FindHost(db, rootBucket, bucket, host)
+		result.SSSHConn()
 	}
 }

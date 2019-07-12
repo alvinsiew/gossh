@@ -6,6 +6,7 @@ import (
 	"log"
 
 	bolt "go.etcd.io/bbolt"
+	"github.com/alvinsiew/gossh/pkg/sshclient"
 )
 
 // Config struct which contain hosts infomation
@@ -78,31 +79,31 @@ func AddHosts(db *bolt.DB, rootBucket string, bucket string, hostname string, ip
 }
 
 // FindHost search for host detail
-func FindHost(db *bolt.DB, rootBucket string, bucket string, host string) {
-
-		// fmt.Printf("Test %v\n", rootBucket)
+func FindHost(db *bolt.DB, rootBucket string, bucket string, host string) Config {
+	var c Config
 	err := db.View(func(tx *bolt.Tx) error {
 		hostDetails := tx.Bucket([]byte(rootBucket)).Bucket([]byte(bucket)).Get([]byte(host))
-
-		// c := tx.Bucket([]byte(rootBucket))
-		// fmt.Println(&c)
-		// find := c.Seek([]byte
-		// findHost := c.Get([]byte(host))
-		// fmt.Println(findHost)
-		fmt.Printf("%s\n", hostDetails)
-		// min := []byte(time.Now().AddDate(0, 0, -7).Format(time.RFC3339))
-		// max := []byte(time.Now().AddDate(0, 0, 0).Format(time.RFC3339))
-		// for k, v := c.Seek(min); k != nil && bytes.Compare(k, max) <= 0; k, v = c.Next() {
-		// 	fmt.Println(string(k), string(v))
-		// }
-		// c.Bucket([]byte("HOSTS"))).Get
-		// findHost := c.
-		// fmt.Println(c.Seek(findHost))
-
-		// for k, v := c.Seek()
-		return nil
+		if hostDetails == nil {
+			fmt.Printf("Unable to find %s\n", host)
+		}
+		err := json.Unmarshal([]byte(hostDetails), &c)
+		if err != nil{
+			log.Fatal(err)
+		}
+		return err
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
+	return c
+}
+
+// SSSHConn make ssh connection to server
+func (c Config) SSSHConn() {
+	ip := c.IP
+	user := c.User
+	port := c.PortNumber
+	key := c.Key
+
+	sshclient.TerminalConn(user, key, ip, port)
 }
