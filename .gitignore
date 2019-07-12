@@ -1,5 +1,5 @@
 ## go module
 go.mod
 go.sum
-gossh.db
+*.db
 terminal*
