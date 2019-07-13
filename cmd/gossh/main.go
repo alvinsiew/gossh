@@ -24,6 +24,11 @@ func init() {
 
 func main() {
 	defaultUser := *config.GetCurrentUser()
+	defaultHome := defaultUser.HomeDir
+	gosshDir := defaultHome + "/.gossh/"
+	gosshDBpath := gosshDir + gosshDB
+	gosshCONFpath := gosshDir + gosshCONF
+	config.MakeDir(gosshDir)
 
 	addParam := flag.Bool("add", false, "Add host:\nUsage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>")
 	hostParam := flag.String("host", "", "Hostname")
@@ -38,13 +43,13 @@ func main() {
 
 	flag.Parse()
 
-	dbc, err := gossh.SetupDB(gosshCONF, rootBucketConf, bucketConf)
+	dbc, err := gossh.SetupDB(gosshCONFpath, rootBucketConf, bucketConf)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer dbc.Close()
 
-	db, err := gossh.SetupDB(gosshDB, rootBucket, bucket)
+	db, err := gossh.SetupDB(gosshDBpath, rootBucket, bucket)
 	if err != nil {
 		log.Fatal(err)
 	}
