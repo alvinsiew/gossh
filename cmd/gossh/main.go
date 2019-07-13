@@ -14,6 +14,9 @@ func main() {
 	rootBucket := "GOSSH"
 	bucket := "HOSTS"
 	gosshDB := "gossh.db"
+	rootBucketConf := "CONF"
+	bucketConf := "VALUE"
+	gosshCONF := "conf.db"
 
 	addParam := flag.Bool("add", false, "Add host:\nUsage: gossh -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>")
 	hostParam := flag.String("host", "", "Hostname")
@@ -24,8 +27,15 @@ func main() {
 	keyParam := flag.String("key", "nokey", "Setup key to for server connection. Using default key if not specific.")
 	listParam := flag.Bool("l", false, "List all hosts config")
 	connParam := flag.Bool("conn", false, "Connection to server:\nUsage: gossh -conn <hostname>\n")
+	// initParam := flag.Bool("init", false, "")
 
 	flag.Parse()
+
+	dbc, err := gossh.SetupDB(gosshCONF, rootBucketConf, bucketConf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer dbc.Close()
 
 	db, err := gossh.SetupDB(gosshDB, rootBucket, bucket)
 	if err != nil {

@@ -41,7 +41,6 @@ func SetupDB(dbFile string, rootBucket string, bucket string) (*bolt.DB, error) 
 	if err != nil {
 		return nil, fmt.Errorf("could not set up buckets, %v", err)
 	}
-	// fmt.Println("DB Setup Done")
 	return db, nil
 }
 
