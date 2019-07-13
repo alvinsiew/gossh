@@ -109,5 +109,8 @@ func (c Config) SSSHConn() {
 	key := c.Key
 	pass := c.Password
 
-	sshclient.TerminalConn(user, key, ip, port, pass)
+	err := sshclient.TerminalConn(user, key, ip, port, pass)
+	if err != nil {
+		log.Fatalf("Fail connection %s", err)
+	}
 }
