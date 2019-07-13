@@ -6,23 +6,30 @@ import (
 	"log"
 	"os"
 
+	"github.com/alvinsiew/gossh/internal/config"
 	"github.com/alvinsiew/gossh/internal/gossh"
 	"github.com/alvinsiew/gossh/pkg/sshclient"
 )
 
-func main() {
-	rootBucket := "GOSSH"
-	bucket := "HOSTS"
-	gosshDB := "gossh.db"
-	rootBucketConf := "CONF"
-	bucketConf := "VALUE"
-	gosshCONF := "conf.db"
+var rootBucket = "GOSSH"
+var bucket = "HOSTS"
+var gosshDB = "gossh.db"
+var rootBucketConf = "CONF"
+var bucketConf = "VALUE"
+var gosshCONF = "conf.db"
 
-	addParam := flag.Bool("add", false, "Add host:\nUsage: gossh -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>")
+func init() {
+	fmt.Println("This will get called on main initialization")
+}
+
+func main() {
+	defaultUser := *config.GetCurrentUser()
+
+	addParam := flag.Bool("add", false, "Add host:\nUsage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>")
 	hostParam := flag.String("host", "", "Hostname")
 	ipParam := flag.String("ip", "", "Adding or changing IP address for host")
-	userParam := flag.String("user", "", "User")
-	portParam := flag.String("port", "22", "Update Port Number. Default(22)")
+	userParam := flag.String("user", defaultUser.Username, "User")
+	portParam := flag.String("port", "22", "Port Number")
 	passParam := flag.String("pass", "", "User password")
 	keyParam := flag.String("key", "nokey", "Setup key to for server connection. Using default key if not specific.")
 	listParam := flag.Bool("l", false, "List all hosts config")
