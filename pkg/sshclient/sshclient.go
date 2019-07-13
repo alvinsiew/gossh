@@ -8,9 +8,6 @@ import (
 	"os"
 	"strings"
 
-	// "fmt"
-	// "reflect"
-
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
 )
@@ -79,9 +76,9 @@ func TerminalConn(user string, keyPath []byte, ipAddr string, port string, pass 
 	err = session.Shell()
 	if err != nil {
 		log.Fatalf("Starts a login shell failed: %s", err)
-	}
-	
+	}	
 	session.Wait()
+
 	return err
 }
 
@@ -129,6 +126,7 @@ func ClientConfig(user string, keyPath []byte, pass string) (*ssh.ClientConfig, 
 			},
 		} 
 	}
+	
 	return config, err
 }
 
