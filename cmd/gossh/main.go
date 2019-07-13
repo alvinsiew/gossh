@@ -20,6 +20,7 @@ func main() {
 	ipParam := flag.String("ip", "", "Adding or changing IP address for host")
 	userParam := flag.String("user", "", "User")
 	portParam := flag.String("port", "22", "Update Port Number. Default(22)")
+	passParam := flag.String("pass", "", "User password")
 	keyParam := flag.String("key", "nokey", "Setup key to for server connection. Using default key if not specific.")
 	listParam := flag.Bool("l", false, "List all hosts config")
 	connParam := flag.Bool("conn", false, "Connection to server:\nUsage: gossh -conn <hostname>\n")
@@ -32,7 +33,6 @@ func main() {
 	}
 	defer db.Close()
 
-	fmt.Println(*keyParam)
 	if *listParam == true {
 		gossh.ListBucket(db, rootBucket, bucket)
 	} else if *addParam == true {
@@ -40,16 +40,14 @@ func main() {
 			fmt.Println("Hostname is require")
 			os.Exit(1)
 		} else if *keyParam != "nokey" {
-			fmt.Println(*keyParam)
 			keyBytes := sshclient.KeyToBytes(*keyParam)
-			err = gossh.AddHosts(db, rootBucket, bucket, *hostParam, *ipParam, *userParam, *portParam, keyBytes)
+			err = gossh.AddHosts(db, rootBucket, bucket, *hostParam, *ipParam, *userParam, *portParam, *passParam, keyBytes)
 			if err != nil {
 				fmt.Printf("Error: %v\n", err)
 			}
 		} else if *keyParam == "nokey" {
 			keyBytes := make([]byte, 0)
-			// fmt.Println(keyBytes)
-			err = gossh.AddHosts(db, rootBucket, bucket, *hostParam, *ipParam, *userParam, *portParam, keyBytes)
+			err = gossh.AddHosts(db, rootBucket, bucket, *hostParam, *ipParam, *userParam, *portParam, *passParam, keyBytes)
 		}
 	} else if *connParam == true {
 		n := len(flag.Args())

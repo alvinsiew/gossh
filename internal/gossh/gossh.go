@@ -15,6 +15,7 @@ type Config struct {
 	IP         string `json:"ip"`
 	User       string `json:"user"`
 	PortNumber string `json:"port"`
+	Password   string `json:"password"`
 	Key        []byte `json:"key"`
 }
 
@@ -61,8 +62,8 @@ func ListBucket(db *bolt.DB, rootBucket string, bucket string) {
 }
 
 // AddHosts for updating database with hosts informations
-func AddHosts(db *bolt.DB, rootBucket string, bucket string, hostname string, ip string, user string, port string, key []byte) error {
-	config := Config{IP: ip, User: user, PortNumber: port, Key: key}
+func AddHosts(db *bolt.DB, rootBucket string, bucket string, hostname string, ip string, user string, port string, pass string, key []byte) error {
+	config := Config{IP: ip, User: user, PortNumber: port, Password: pass, Key: key}
 	configBytes, err := json.Marshal(config)
 	if err != nil {
 		return fmt.Errorf("could not marshal config json: %v", err)
@@ -106,6 +107,7 @@ func (c Config) SSSHConn() {
 	user := c.User
 	port := c.PortNumber
 	key := c.Key
+	pass := c.Password
 
-	sshclient.TerminalConn(user, key, ip, port)
+	sshclient.TerminalConn(user, key, ip, port, pass)
 }

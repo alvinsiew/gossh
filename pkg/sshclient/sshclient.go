@@ -1,11 +1,13 @@
 package sshclient
 
 import (
+	"fmt"
 	"io/ioutil"
-	"net"
 	"log"
+	"net"
 	"os"
 	"strings"
+
 	// "fmt"
 	// "reflect"
 
@@ -14,32 +16,15 @@ import (
 )
 
 // TerminalConn is use for making ssh connection with pty request
-func TerminalConn(user string, keyPath []byte, ipAddr string, port string) {
+func TerminalConn(user string, keyPath []byte, ipAddr string, port string, pass string) {
 	// Joining ip address and port as a strings
 	value := []string{}
 	value = append(value, ipAddr)
 	value = append(value, port)
 	ipPort := strings.Join(value, ":")
+	var config *ssh.ClientConfig
 
-	// key, err := ioutil.ReadFile(keyPath)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	signer, err := ssh.ParsePrivateKey([]byte(keyPath))
-	if err != nil {
-		panic(err)
-	}
-
-	config := &ssh.ClientConfig{
-		User: user,
-		Auth: []ssh.AuthMethod{
-			// ssh.Password("your_password"),
-			ssh.PublicKeys(signer),
-		},
-		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
-			return nil
-		},
-	}
+	config = ClientConfig(user, keyPath, pass)
 
 	conn, err := ssh.Dial("tcp", ipPort, config)
 	if err != nil {
@@ -59,7 +44,6 @@ func TerminalConn(user string, keyPath []byte, ipAddr string, port string) {
 	session.Stdout = os.Stdout
 	session.Stderr = os.Stderr
 	session.Stdin = os.Stdin
-
 
 	modes := ssh.TerminalModes{
 		ssh.ECHO:          1,     // enable echoing
@@ -104,4 +88,45 @@ func KeyToBytes(keyPath string) []byte {
 		panic(err)
 	}
 	return key
+}
+// ClientConfig ssh login authentication method
+func ClientConfig(user string, keyPath []byte, pass string) *ssh.ClientConfig {
+	var signer ssh.Signer
+	var err error
+	if len(keyPath) != 0 {
+		signer, err = ssh.ParsePrivateKey([]byte(keyPath))
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	config := &ssh.ClientConfig{
+		User: user,
+		Auth: []ssh.AuthMethod{
+			ssh.Password(pass),
+			ssh.KeyboardInteractive(challenge),
+			ssh.PublicKeys(signer),
+		},
+		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+			return nil
+		},
+	}
+	return config
+}
+
+// Interaction between server and client
+func challenge(user, instruction string, questions []string, echos []bool) (answers []string, err error) {
+	answers = make([]string, len(questions))
+	for n, q := range questions {
+		fmt.Printf("Enter %s\n", q)
+		bytePassword, err := terminal.ReadPassword(0)
+        if err != nil {
+                panic(err)
+        }
+        password := string(bytePassword)
+
+		answers[n] = password
+	}
+	
+	return answers, nil
 }
