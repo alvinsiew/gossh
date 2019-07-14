@@ -38,7 +38,7 @@ func main() {
 	portParam := flag.String("port", "22", "Port Number")
 	passParam := flag.String("pass", "", "User password")
 	keyParam := flag.String("key", "nokey", "Setup key to for server connection. Using default key if not specific.")
-	listParam := flag.Bool("l", false, "List all hosts config")
+	listParam := flag.Bool("l", false, "List all hosts config\n -l all to list all values")
 	connParam := flag.Bool("conn", false, "Connection to server:\nUsage: gossh -conn <hostname>\n")
 	// initParam := flag.Bool("init", false, "")
 
