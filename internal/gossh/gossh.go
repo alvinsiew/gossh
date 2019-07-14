@@ -6,8 +6,9 @@ import (
 	"log"
 	"os"
 
-	bolt "go.etcd.io/bbolt"
 	"github.com/alvinsiew/gossh/pkg/sshclient"
+	"github.com/alvinsiew/gossh/internal/crypto"
+	bolt "go.etcd.io/bbolt"
 )
 
 // Config struct which contain hosts infomation
@@ -93,6 +94,20 @@ func AddHosts(db *bolt.DB, rootBucket string, bucket string, hostname string, ip
 	return err
 }
 
+// AddConf for updating database with hosts informations
+func AddConf(db *bolt.DB, rootBucketConf string, key string, value string) error {
+	shaKey := crypto.CreateHash(key)
+	err := db.Update(func(tx *bolt.Tx) error {
+		err := tx.Bucket([]byte(rootBucketConf)).Put([]byte(key), []byte(shaKey))
+		if err != nil {
+			return fmt.Errorf("could not insert %v", err)
+		}
+
+		return nil
+	})
+	return err
+}
+
 // FindHost search for host detail
 func FindHost(db *bolt.DB, rootBucket string, bucket string, host string) Config {
 	var c Config
@@ -103,7 +118,7 @@ func FindHost(db *bolt.DB, rootBucket string, bucket string, host string) Config
 			os.Exit(1)
 		}
 		err := json.Unmarshal([]byte(hostDetails), &c)
-		if err != nil{
+		if err != nil {
 			log.Fatal(err)
 		}
 		return err
@@ -112,6 +127,20 @@ func FindHost(db *bolt.DB, rootBucket string, bucket string, host string) Config
 		log.Fatal(err)
 	}
 	return c
+}
+
+// FindConf search for key pair
+func FindConf(db *bolt.DB, rootBucket string, key string) string {
+	var result []byte
+	err := db.View(func(tx *bolt.Tx) error {
+		hostDetails := tx.Bucket([]byte(rootBucket))
+		result = hostDetails.Get([]byte(key))
+		return nil
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(result)
 }
 
 // DeleteHost for deleting host from db

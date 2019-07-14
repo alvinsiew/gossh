@@ -19,7 +19,24 @@ var bucketConf = "VALUE"
 var gosshCONF = "conf.db"
 
 func init() {
-	fmt.Println("This will get called on main initialization")
+	defaultUser := *config.GetCurrentUser()
+	defaultHome := defaultUser.HomeDir
+	gosshDir := defaultHome + "/.gossh/"
+	gosshCONFpath := gosshDir + gosshCONF
+	config.MakeDir(gosshDir)
+	dbc, err := gossh.SetupDB(gosshCONFpath, rootBucketConf, bucketConf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer dbc.Close()
+	findKey := gossh.FindConf(dbc, rootBucketConf, "key")
+	if len(findKey) <= 0 {
+		fmt.Print("abc")
+		gossh.AddConf(dbc, rootBucketConf, "key", "hello")
+	}
+	fmt.Println(findKey)
+	// gossh.ListBucketTest(dbc, rootBucketConf)
+
 }
 
 func main() {
@@ -27,8 +44,8 @@ func main() {
 	defaultHome := defaultUser.HomeDir
 	gosshDir := defaultHome + "/.gossh/"
 	gosshDBpath := gosshDir + gosshDB
-	gosshCONFpath := gosshDir + gosshCONF
-	config.MakeDir(gosshDir)
+	// gosshCONFpath := gosshDir + gosshCONF
+	// config.MakeDir(gosshDir)
 
 	addParam := flag.Bool("add", false, "Add host:\nUsage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>")
 	delParam := flag.Bool("del", false, "Hostname to delete")
@@ -44,11 +61,11 @@ func main() {
 
 	flag.Parse()
 
-	dbc, err := gossh.SetupDB(gosshCONFpath, rootBucketConf, bucketConf)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer dbc.Close()
+	// dbc, err := gossh.SetupDB(gosshCONFpath, rootBucketConf, bucketConf)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer dbc.Close()
 
 	db, err := gossh.SetupDB(gosshDBpath, rootBucket, bucket)
 	if err != nil {
