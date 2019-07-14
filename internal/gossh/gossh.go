@@ -100,6 +100,23 @@ func FindHost(db *bolt.DB, rootBucket string, bucket string, host string) Config
 	return c
 }
 
+// DeleteHost for deleting host from db
+func DeleteHost(db *bolt.DB, rootBucket string, bucket string, host string) error {
+
+	err := db.Update(func(tx *bolt.Tx) error {
+		hostDetails := tx.Bucket([]byte(rootBucket)).Bucket([]byte(bucket))
+		err := hostDetails.Delete([]byte(host))
+		if err != nil {
+			log.Fatalf("Error: %s", err)
+		}
+		return err
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return err
+}
+
 // SSSHConn make ssh connection to server
 func (c Config) SSSHConn() {
 	ip := c.IP

@@ -31,6 +31,7 @@ func main() {
 	config.MakeDir(gosshDir)
 
 	addParam := flag.Bool("add", false, "Add host:\nUsage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>")
+	delParam := flag.Bool("del", false, "Hostname to delete")
 	hostParam := flag.String("host", "", "Hostname")
 	ipParam := flag.String("ip", "", "Adding or changing IP address for host")
 	userParam := flag.String("user", defaultUser.Username, "User")
@@ -80,5 +81,16 @@ func main() {
 		host := flag.Args()[0]
 		result := gossh.FindHost(db, rootBucket, bucket, host)
 		result.SSSHConn()
+	} else if *delParam == true {
+		n := len(flag.Args())
+		if n == 0 {
+			fmt.Printf("No hostname to delete\n")
+			os.Exit(1)
+		}
+		host := flag.Args()[0]
+		err := gossh.DeleteHost(db, rootBucket, bucket, host)
+		if err != nil {
+			log.Fatalf("Error: %s", err)
+		}
 	}
 }
