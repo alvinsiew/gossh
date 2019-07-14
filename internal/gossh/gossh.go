@@ -44,13 +44,27 @@ func SetupDB(dbFile string, rootBucket string, bucket string) (*bolt.DB, error) 
 	return db, nil
 }
 
-// ListBucket for listings all hosts
+// ListBucket for listings all hosts and value
 func ListBucket(db *bolt.DB, rootBucket string, bucket string) {
-
 	err := db.View(func(tx *bolt.Tx) error {
 		rootBucket := tx.Bucket([]byte(rootBucket)).Bucket([]byte(bucket))
 		rootBucket.ForEach(func(k, v []byte) error {
 			fmt.Println(string(k), string(v))
+			return nil
+		})
+		return nil
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// ListBucketHOSTS for listings all hosts
+func ListBucketHOSTS(db *bolt.DB, rootBucket string, bucket string) {
+	err := db.View(func(tx *bolt.Tx) error {
+		rootBucket := tx.Bucket([]byte(rootBucket)).Bucket([]byte(bucket))
+		rootBucket.ForEach(func(k, v []byte) error {
+			fmt.Println(string(k))
 			return nil
 		})
 		return nil

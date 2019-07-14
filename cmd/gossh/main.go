@@ -57,7 +57,12 @@ func main() {
 	defer db.Close()
 
 	if *listParam == true {
-		gossh.ListBucket(db, rootBucket, bucket)
+		n := len(flag.Args())
+		if n == 0 {
+			gossh.ListBucketHOSTS(db, rootBucket, bucket)
+		} else if flag.Args()[0] == "all" {
+			gossh.ListBucket(db, rootBucket, bucket)
+		}
 	} else if *addParam == true {
 		if *hostParam == "" {
 			fmt.Println("Hostname is require")
