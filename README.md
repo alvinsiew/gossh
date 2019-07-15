@@ -13,6 +13,7 @@ To compile on your own. Please choose your own favour of os to compile.
 Example:
 env GOOS=darwin GOARCH=amd64 go build -o bin/64bit/darwin/gossh cmd/gossh/main.go
 
+```lua
 Usage of ./gossh:
   -add
         Add host:
@@ -36,6 +37,7 @@ Usage of ./gossh:
         Port Number (default "22")
   -user string
         User (default "default user")
+```
 
 
 ### Prerequisites
