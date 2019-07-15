@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/alvinsiew/gossh/pkg/sshclient"
-	"github.com/alvinsiew/gossh/internal/crypto"
+	"github.com/alvinsiew/gossh/pkg/crypto"
 	configuration "github.com/alvinsiew/gossh/internal/config"
 	bolt "go.etcd.io/bbolt"
 )
