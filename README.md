@@ -1,4 +1,4 @@
-# Gossh(&#33;)
+# Gossh
 
 Command line SSH client.
 
