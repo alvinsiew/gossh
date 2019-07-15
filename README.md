@@ -1,4 +1,4 @@
-# Gossh
+# Gossh!
 Command line ssh client.
 
 Easy to copy move and backup client to other machine.
