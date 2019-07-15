@@ -1,4 +1,5 @@
-# Gossh&#33;
+# Gossh&#33
+
 Command line SSH client.
 
 Features:
@@ -7,6 +8,7 @@ Does not require to install ssh to use Gossh!.
 No installation require. Just need to copy binary to client machine.
 
 ## Getting Started
+
 Copy from gossh/bin to your machine /bin folder for linux, and gossh is ready to be use.
 
 To compile on your own. Please choose your own favour of os to compile.
@@ -15,7 +17,7 @@ env GOOS=darwin GOARCH=amd64 go build -o bin/64bit/darwin/gossh cmd/gossh/main.g
 
 Usage:
 
-```
+```golang
 
 Usage of ./gossh:
   -add
@@ -60,7 +62,6 @@ gossh -c server-test
 ### Prerequisites
 
 No prerequistes required.
-
 
 ## License
 
