@@ -44,6 +44,7 @@ Usage of ./gossh:
 ```
 
 Example:
+```golang
 To add a host:
 gossh -add -host server-test -ip 192.168.1.23 -user centos -port 22 -key /home/hello/id_rsa
 
@@ -58,6 +59,7 @@ gossh -l all
 
 To connect to host:
 gossh -c server-test
+```
 
 ### Prerequisites
 
