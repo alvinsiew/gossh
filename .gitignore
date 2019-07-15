@@ -1,5 +1,2 @@
 ## go module
-go.mod
-go.sum
 *.db
-terminal*
