@@ -2,10 +2,12 @@
 
 Command line SSH client.
 
+```text
 Features:
 Host informations etc(ip address, port, key) will be encrypted on rest in datafile.
 Does not require to install ssh to use Gossh!.
 No installation require. Just need to copy binary to client machine.
+```
 
 ## Getting Started
 
