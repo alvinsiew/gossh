@@ -13,6 +13,31 @@ To compile on your own. Please choose your own favour of os to compile.
 Example:
 env GOOS=darwin GOARCH=amd64 go build -o bin/64bit/darwin/gossh cmd/gossh/main.go
 
+Usage of ./gossh:
+  -add
+        Add host:
+        Usage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>
+  -c    Connection to server:
+        Usage: gossh -conn <hostname>
+    
+  -del
+        Hostname to delete
+  -host string
+        Hostname
+  -ip string
+        Adding or changing IP address for host
+  -key string
+        Setup key to for server connection. Using default key if not specific. (default "nokey")
+  -l    List all hosts config
+         -l all to list all values
+  -pass string
+        User password
+  -port string
+        Port Number (default "22")
+  -user string
+        User (default "default user")
+
+
 ### Prerequisites
 
 No prerequistes required.
