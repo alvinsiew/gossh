@@ -1,5 +1,7 @@
-# Project Title
-GOSSH
+# Gossh
+Command line ssh client.
+
+Easy to copy move and backup client to other machine.
 
 ## Getting Started
 
