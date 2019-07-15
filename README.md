@@ -13,14 +13,16 @@ To compile on your own. Please choose your own favour of os to compile.
 Example:
 env GOOS=darwin GOARCH=amd64 go build -o bin/64bit/darwin/gossh cmd/gossh/main.go
 
-```lua
+Usage:
+
+```
+
 Usage of ./gossh:
   -add
         Add host:
         Usage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>
   -c    Connection to server:
         Usage: gossh -conn <hostname>
-    
   -del
         Hostname to delete
   -host string
@@ -39,6 +41,21 @@ Usage of ./gossh:
         User (default "default user")
 ```
 
+Example:
+To add a host:
+gossh -add -host server-test -ip 192.168.1.23 -user centos -port 22 -key /home/hello/id_rsa
+
+To remove a host:
+gossh -del server-test
+
+To list all hosts:
+gossh -l
+
+To list all hosts with all informations:
+gossh -l all
+
+To connect to host:
+gossh -c server-test
 
 ### Prerequisites
 
