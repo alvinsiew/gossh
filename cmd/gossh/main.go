@@ -14,29 +14,20 @@ import (
 var rootBucket = "GOSSH"
 var bucket = "HOSTS"
 var gosshDB = "gossh.db"
-var rootBucketConf = "CONF"
-var bucketConf = "VALUE"
-var gosshCONF = "conf.db"
 
 func init() {
 	defaultUser := *config.GetCurrentUser()
 	defaultHome := defaultUser.HomeDir
 	gosshDir := defaultHome + "/.gossh/"
-	gosshCONFpath := gosshDir + gosshCONF
 	config.MakeDir(gosshDir)
-	dbc, err := gossh.SetupDB(gosshCONFpath, rootBucketConf, bucketConf)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer dbc.Close()
-	findKey := gossh.FindConf(dbc, rootBucketConf, "key")
-	if len(findKey) <= 0 {
-		fmt.Print("abc")
-		gossh.AddConf(dbc, rootBucketConf, "key", "hello")
-	}
-	fmt.Println(findKey)
-	// gossh.ListBucketTest(dbc, rootBucketConf)
 
+	findKey := gossh.GetKey()
+	if len(findKey) <= 0 {
+		err := gossh.KeyGen()
+		if err != nil {
+			log.Fatalf("Error generating sha key: %s", err)
+		}
+	}
 }
 
 func main() {
@@ -44,8 +35,6 @@ func main() {
 	defaultHome := defaultUser.HomeDir
 	gosshDir := defaultHome + "/.gossh/"
 	gosshDBpath := gosshDir + gosshDB
-	// gosshCONFpath := gosshDir + gosshCONF
-	// config.MakeDir(gosshDir)
 
 	addParam := flag.Bool("add", false, "Add host:\nUsage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>")
 	delParam := flag.Bool("del", false, "Hostname to delete")
@@ -56,16 +45,9 @@ func main() {
 	passParam := flag.String("pass", "", "User password")
 	keyParam := flag.String("key", "nokey", "Setup key to for server connection. Using default key if not specific.")
 	listParam := flag.Bool("l", false, "List all hosts config\n -l all to list all values")
-	connParam := flag.Bool("conn", false, "Connection to server:\nUsage: gossh -conn <hostname>\n")
-	// initParam := flag.Bool("init", false, "")
+	connParam := flag.Bool("c", false, "Connection to server:\nUsage: gossh -conn <hostname>\n")
 
 	flag.Parse()
-
-	// dbc, err := gossh.SetupDB(gosshCONFpath, rootBucketConf, bucketConf)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer dbc.Close()
 
 	db, err := gossh.SetupDB(gosshDBpath, rootBucket, bucket)
 	if err != nil {

@@ -8,8 +8,17 @@ import (
 
 	"github.com/alvinsiew/gossh/pkg/sshclient"
 	"github.com/alvinsiew/gossh/internal/crypto"
+	configuration "github.com/alvinsiew/gossh/internal/config"
 	bolt "go.etcd.io/bbolt"
 )
+
+var rootBucketConf = "CONF"
+var bucketConf = "VALUE"
+var gosshCONF = "conf.db"
+var defaultUser = *configuration.GetCurrentUser()
+var defaultHome = defaultUser.HomeDir
+var gosshDir = defaultHome + "/.gossh/"
+var gosshCONFpath = gosshDir + gosshCONF
 
 // Config struct which contain hosts infomation
 type Config struct {
@@ -47,13 +56,21 @@ func SetupDB(dbFile string, rootBucket string, bucket string) (*bolt.DB, error) 
 
 // ListBucket for listings all hosts and value
 func ListBucket(db *bolt.DB, rootBucket string, bucket string) {
+	findKey := GetKey()
 	err := db.View(func(tx *bolt.Tx) error {
 		rootBucket := tx.Bucket([]byte(rootBucket)).Bucket([]byte(bucket))
-		rootBucket.ForEach(func(k, v []byte) error {
+		err := rootBucket.ForEach(func(k, v []byte) error {
+			v, err := crypto.Decrypt(v, findKey)
+			if err != nil{
+				log.Fatalf("Decrytion Error %s", err)
+			}
 			fmt.Println(string(k), string(v))
-			return nil
+			return err
 		})
-		return nil
+		if err != nil {
+			log.Fatalf("Error Listing %s:", err)
+		}
+		return err
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -82,6 +99,10 @@ func AddHosts(db *bolt.DB, rootBucket string, bucket string, hostname string, ip
 	if err != nil {
 		return fmt.Errorf("could not marshal config json: %v", err)
 	}
+
+	findKey := GetKey()
+
+	configBytes = crypto.Encrypt(configBytes, findKey)
 	err = db.Update(func(tx *bolt.Tx) error {
 		err := tx.Bucket([]byte(rootBucket)).Bucket([]byte(bucket)).Put([]byte(hostname), configBytes)
 		if err != nil {
@@ -94,7 +115,7 @@ func AddHosts(db *bolt.DB, rootBucket string, bucket string, hostname string, ip
 	return err
 }
 
-// AddConf for updating database with hosts informations
+// AddConf for updating sha key to database with hosts informations
 func AddConf(db *bolt.DB, rootBucketConf string, key string, value string) error {
 	shaKey := crypto.CreateHash(key)
 	err := db.Update(func(tx *bolt.Tx) error {
@@ -111,13 +132,18 @@ func AddConf(db *bolt.DB, rootBucketConf string, key string, value string) error
 // FindHost search for host detail
 func FindHost(db *bolt.DB, rootBucket string, bucket string, host string) Config {
 	var c Config
+	findKey := GetKey()
 	err := db.View(func(tx *bolt.Tx) error {
 		hostDetails := tx.Bucket([]byte(rootBucket)).Bucket([]byte(bucket)).Get([]byte(host))
 		if hostDetails == nil {
 			fmt.Printf("Unable to find host %s\n", host)
 			os.Exit(1)
 		}
-		err := json.Unmarshal([]byte(hostDetails), &c)
+		hostDetails, err := crypto.Decrypt(hostDetails, findKey)
+		if err != nil {
+			log.Fatalf("Decrytipn Error %s", err)
+		}
+		err = json.Unmarshal([]byte(hostDetails), &c)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -160,6 +186,22 @@ func DeleteHost(db *bolt.DB, rootBucket string, bucket string, host string) erro
 	return err
 }
 
+// GetKey Get sha key for encrypt and decrypt of entry
+func GetKey() string {
+	// defaultUser := *configuration.GetCurrentUser()
+	// defaultHome := defaultUser.HomeDir
+	// gosshDir := defaultHome + "/.gossh/"
+	// gosshCONFpath := gosshDir + gosshCONF
+	
+	dbc, err := SetupDB(gosshCONFpath, rootBucketConf, bucketConf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer dbc.Close()
+	findKey := FindConf(dbc, rootBucketConf, "key")
+	return findKey
+}
+
 // SSSHConn make ssh connection to server
 func (c Config) SSSHConn() {
 	ip := c.IP
@@ -172,4 +214,19 @@ func (c Config) SSSHConn() {
 	if err != nil {
 		log.Fatalf("Fail connection %s", err)
 	}
+}
+
+// KeyGen generate sha key for conf db
+func KeyGen() error {	
+	dbc, err := SetupDB(gosshCONFpath, rootBucketConf, bucketConf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer dbc.Close()
+
+	err = AddConf(dbc, rootBucketConf, "key", "hello")
+	if err != nil {
+		log.Fatalf("Fail adding sha key %s", err)
+	}
+	return err
 }

@@ -31,3 +31,23 @@ func Encrypt(data []byte, passphrase string) []byte {
 	ciphertext := gcm.Seal(nonce, nonce, data, nil)
 	return ciphertext
 }
+
+// Decrypt data
+func Decrypt(data []byte, passphrase string) ([]byte, error) {
+        key, _ := hex.DecodeString(passphrase)
+        block, err := aes.NewCipher(key)
+        if err != nil {
+                panic(err.Error())
+        }
+        gcm, err := cipher.NewGCM(block)
+        if err != nil {
+                panic(err.Error())
+        }
+        nonceSize := gcm.NonceSize()
+        nonce, ciphertext := data[:nonceSize], data[nonceSize:]
+        plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
+        if err != nil {
+                panic(err.Error())
+        }
+        return plaintext, err
+}
