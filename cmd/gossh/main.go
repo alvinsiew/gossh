@@ -28,6 +28,8 @@ func init() {
 			log.Fatalf("Error generating sha key: %s", err)
 		}
 	}
+
+	fmt.Println(findKey)
 }
 
 func main() {

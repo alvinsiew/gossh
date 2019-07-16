@@ -117,7 +117,7 @@ func AddHosts(db *bolt.DB, rootBucket string, bucket string, hostname string, ip
 
 // AddConf for updating sha key to database with hosts informations
 func AddConf(db *bolt.DB, rootBucketConf string, key string, value string) error {
-	shaKey := crypto.CreateHash(key)
+	shaKey := crypto.CreateHash(value)
 	err := db.Update(func(tx *bolt.Tx) error {
 		err := tx.Bucket([]byte(rootBucketConf)).Put([]byte(key), []byte(shaKey))
 		if err != nil {
@@ -224,7 +224,8 @@ func KeyGen() error {
 	}
 	defer dbc.Close()
 
-	err = AddConf(dbc, rootBucketConf, "key", "hello")
+	value := configuration.RandStringRunes(10)
+	err = AddConf(dbc, rootBucketConf, "key", value)
 	if err != nil {
 		log.Fatalf("Fail adding sha key %s", err)
 	}
