@@ -122,12 +122,21 @@ func ClientConfig(user string, keyPath []byte, pass string) (*ssh.ClientConfig, 
 				return nil
 			},
 		}
-	} else {
+	} else if keyLen > 0 {
+		config = &ssh.ClientConfig{
+			User: user,
+			Auth: []ssh.AuthMethod{
+				ssh.PublicKeys(signer),
+			},
+			HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+				return nil
+			},
+		}
+	} else if pass != "" {
 		config = &ssh.ClientConfig{
 			User: user,
 			Auth: []ssh.AuthMethod{
 				ssh.Password(pass),
-				ssh.PublicKeys(signer),
 			},
 			HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
 				return nil
