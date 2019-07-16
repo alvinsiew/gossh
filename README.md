@@ -15,8 +15,11 @@ No installation require. Just need to copy binary to client machine.
 Copy from gossh/bin to your machine /bin folder for linux, and gossh is ready to be use.
 
 To compile on your own. Please choose your own favour of os to compile.
+
+```bash
 Example:
 env GOOS=darwin GOARCH=amd64 go build -o bin/64bit/darwin/gossh cmd/gossh/main.go
+```
 
 Usage:
 
