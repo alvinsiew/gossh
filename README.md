@@ -3,7 +3,7 @@
 Command line SSH client.
 
 ```text
-Features:
+About
 Support linux and mac. (Window is not working 100% currently, will try to make it workable in next version)
 Host informations etc(ip address, port, key) will be encrypted on rest in datafile.
 Does not require to install ssh to use Gossh.
