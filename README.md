@@ -55,7 +55,7 @@ Usage of ./gossh:
         User (default "alvinsiew")
 exit status 2
 
-$ go run cmd/gossh/main.go -h  
+$ go run cmd/gossh/main.go -h
 Usage of /var/folders/33/3_dzcxkn2wg2zvkk_l4977fc0000gn/T/go-build358610656/b001/exe/main:
   -add
         Add host:
