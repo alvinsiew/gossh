@@ -45,7 +45,35 @@ Usage of ./gossh:
   -key string
         Setup key to for server connection. Using default key if not specific. (default "nokey")
   -l    List all hosts config
-         -l all to list all values
+         -l info to list more infor
+         -l key to list private key
+  -pass string
+        User password
+  -port string
+        Port Number (default "22")
+  -user string
+        User (default "alvinsiew")
+exit status 2
+Alvins-MacBook-Pro:gossh alvinsiew$ go run cmd/gossh/main.go -h 
+Usage of /var/folders/33/3_dzcxkn2wg2zvkk_l4977fc0000gn/T/go-build358610656/b001/exe/main:
+  -add
+        Add host:
+        Usage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>
+  -c    Connection to server:
+        Usage: gossh -conn <hostname>
+  -del
+        Hostname to delete
+  -host string
+        Hostname
+  -ip string
+        Adding or changing IP address for host
+  -key string
+        Setup key to for server connection. Using default key if not specific. (default "nokey")
+  -l    List all hosts config
+         -l info 
+        to list more infor
+         -l key 
+        to list private key
   -pass string
         User password
   -port string
@@ -66,8 +94,11 @@ gossh -del server-test
 To list all hosts:
 gossh -l
 
-To list all hosts with all informations:
-gossh -l all
+To list more info on hosts:
+gossh -l info
+
+To list host private key:
+gossh -l key
 
 To connect to host:
 gossh -c server-test
