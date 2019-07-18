@@ -55,8 +55,9 @@ func SetupDB(dbFile string, rootBucket string, bucket string) (*bolt.DB, error) 
 }
 
 // ListBucket for listings all hosts and value
-func ListBucket(db *bolt.DB, rootBucket string, bucket string) {
+func ListBucket(db *bolt.DB, rootBucket string, bucket string, arg string) {
 	findKey := GetKey()
+	var c Config
 	err := db.View(func(tx *bolt.Tx) error {
 		rootBucket := tx.Bucket([]byte(rootBucket)).Bucket([]byte(bucket))
 		err := rootBucket.ForEach(func(k, v []byte) error {
@@ -64,7 +65,14 @@ func ListBucket(db *bolt.DB, rootBucket string, bucket string) {
 			if err != nil{
 				log.Fatalf("Decrytion Error %s", err)
 			}
-			fmt.Println(string(k), string(v))
+
+			err = json.Unmarshal([]byte(v), &c)
+			if arg == "info" {
+				fmt.Println(string(k), "IP:", string(c.IP), "User:", string(c.User), "Port:", string(c.PortNumber))
+			} else if arg == "key" {
+				fmt.Println(string(k), "key:", string(c.Key))
+			}
+			// fmt.Println(string(k), string(c.IP), string(c.User), string(c.PortNumber), string(c.Key))
 			return err
 		})
 		if err != nil {
@@ -188,11 +196,6 @@ func DeleteHost(db *bolt.DB, rootBucket string, bucket string, host string) erro
 
 // GetKey Get sha key for encrypt and decrypt of entry
 func GetKey() string {
-	// defaultUser := *configuration.GetCurrentUser()
-	// defaultHome := defaultUser.HomeDir
-	// gosshDir := defaultHome + "/.gossh/"
-	// gosshCONFpath := gosshDir + gosshCONF
-	
 	dbc, err := SetupDB(gosshCONFpath, rootBucketConf, bucketConf)
 	if err != nil {
 		log.Fatal(err)

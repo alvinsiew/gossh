@@ -44,7 +44,7 @@ func main() {
 	portParam := flag.String("port", "22", "Port Number")
 	passParam := flag.String("pass", "", "User password")
 	keyParam := flag.String("key", "nokey", "Setup key to for server connection. Using default key if not specific.")
-	listParam := flag.Bool("l", false, "List all hosts config\n -l all to list all values")
+	listParam := flag.Bool("l", false, "List all hosts config\n -l info \nto list more infor\n -l key \nto list private key")
 	connParam := flag.Bool("c", false, "Connection to server:\nUsage: gossh -conn <hostname>\n")
 
 	flag.Parse()
@@ -59,8 +59,12 @@ func main() {
 		n := len(flag.Args())
 		if n == 0 {
 			gossh.ListBucketHOSTS(db, rootBucket, bucket)
-		} else if flag.Args()[0] == "all" {
-			gossh.ListBucket(db, rootBucket, bucket)
+		} else if flag.Args()[0] == "info" {
+			gossh.ListBucket(db, rootBucket, bucket, flag.Args()[0])
+		} else if flag.Args()[0] == "key" {
+			gossh.ListBucket(db, rootBucket, bucket, flag.Args()[0])
+		} else {
+			log.Fatalf("Invalid argument")
 		}
 	} else if *addParam == true {
 		if *hostParam == "" {
