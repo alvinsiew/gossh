@@ -1,5 +1,7 @@
 # Gossh
 
+![](https://img.shields.io/github/release/alvinsiew/gossh.svgsvg?style=flat)
+
 Command line SSH client.
 
 ```text
