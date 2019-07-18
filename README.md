@@ -54,7 +54,8 @@ Usage of ./gossh:
   -user string
         User (default "alvinsiew")
 exit status 2
-Alvins-MacBook-Pro:gossh alvinsiew$ go run cmd/gossh/main.go -h 
+
+$ go run cmd/gossh/main.go -h  
 Usage of /var/folders/33/3_dzcxkn2wg2zvkk_l4977fc0000gn/T/go-build358610656/b001/exe/main:
   -add
         Add host:
@@ -70,9 +71,9 @@ Usage of /var/folders/33/3_dzcxkn2wg2zvkk_l4977fc0000gn/T/go-build358610656/b001
   -key string
         Setup key to for server connection. Using default key if not specific. (default "nokey")
   -l    List all hosts config
-         -l info 
+         -l info
         to list more infor
-         -l key 
+         -l key
         to list private key
   -pass string
         User password
