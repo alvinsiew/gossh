@@ -1,7 +1,9 @@
 package config
 
-import "testing"
-import "os"
+import (
+	"testing"
+	"os"
+)
 
 func TestGetCurrentUser(t *testing.T) {
 	getuser := GetCurrentUser()
