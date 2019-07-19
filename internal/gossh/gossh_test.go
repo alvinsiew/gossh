@@ -16,7 +16,7 @@ var pass = "abc123"
 var key = []byte{1,2,3,4,5,6,7,8}
 var dbConf = "testconf.db"
 
-func TestSetupDBAddHosts(t *testing.T) {
+func TestSetupDBAddHostsGetKeyAddHostsFindHost(t *testing.T) {
 	db, err := SetupDB(dbFile, rootBucketTest, bucketTest)
 	if err != nil {
 		t.Errorf("Cannot open db")
@@ -43,5 +43,13 @@ func TestSetupDBAddHosts(t *testing.T) {
 	h := FindHost(db, rootBucketTest, bucketTest, dbConf, hostname)
 	if h.IP != ip {
 		t.Errorf("Ip address does not match %s: %s", ip, h.IP)
+	} else if h.PortNumber != port {
+		t.Errorf("Port does not match %s: %s", port, h.PortNumber)
+	} else if h.User != user {
+		t.Errorf("User does not match %s: %s", user, h.User )
+	} else if h.Password != pass {
+		t.Errorf("Password does not match %s: %s", pass, h.Password)
 	}
+	os.Remove(dbFile)
+	os.Remove(dbConf)
 }
