@@ -14,6 +14,11 @@ import (
 var rootBucket = "GOSSH"
 var bucket = "HOSTS"
 var gosshDB = "gossh.db"
+var gosshCONF = "conf.db"
+var defaultUser = *config.GetCurrentUser()
+var defaultHome = defaultUser.HomeDir
+var gosshDir = defaultHome + "/.gossh/"
+var dbConfPath = gosshDir + gosshCONF
 
 func init() {
 	defaultUser := *config.GetCurrentUser()
@@ -21,9 +26,9 @@ func init() {
 	gosshDir := defaultHome + "/.gossh/"
 	config.MakeDir(gosshDir)
 
-	findKey := gossh.GetKey()
+	findKey := gossh.GetKey(dbConfPath)
 	if len(findKey) <= 0 {
-		err := gossh.KeyGen()
+		err := gossh.KeyGen(dbConfPath)
 		if err != nil {
 			log.Fatalf("Error generating sha key: %s", err)
 		}
@@ -60,9 +65,9 @@ func main() {
 		if n == 0 {
 			gossh.ListBucketHOSTS(db, rootBucket, bucket)
 		} else if flag.Args()[0] == "info" {
-			gossh.ListBucket(db, rootBucket, bucket, flag.Args()[0])
+			gossh.ListBucket(db, rootBucket, bucket, dbConfPath, flag.Args()[0])
 		} else if flag.Args()[0] == "key" {
-			gossh.ListBucket(db, rootBucket, bucket, flag.Args()[0])
+			gossh.ListBucket(db, rootBucket, bucket, dbConfPath, flag.Args()[0])
 		} else {
 			log.Fatalf("Invalid argument")
 		}
@@ -72,13 +77,13 @@ func main() {
 			os.Exit(1)
 		} else if *keyParam != "nokey" {
 			keyBytes := sshclient.KeyToBytes(*keyParam)
-			err = gossh.AddHosts(db, rootBucket, bucket, *hostParam, *ipParam, *userParam, *portParam, *passParam, keyBytes)
+			err = gossh.AddHosts(db, rootBucket, bucket, dbConfPath, *hostParam, *ipParam, *userParam, *portParam, *passParam, keyBytes)
 			if err != nil {
 				fmt.Printf("Error: %v\n", err)
 			}
 		} else if *keyParam == "nokey" {
 			keyBytes := make([]byte, 0)
-			err = gossh.AddHosts(db, rootBucket, bucket, *hostParam, *ipParam, *userParam, *portParam, *passParam, keyBytes)
+			err = gossh.AddHosts(db, rootBucket, bucket, dbConfPath, *hostParam, *ipParam, *userParam, *portParam, *passParam, keyBytes)
 		}
 	} else if *connParam == true {
 		n := len(flag.Args())
@@ -87,7 +92,7 @@ func main() {
 			os.Exit(1)
 		}
 		host := flag.Args()[0]
-		result := gossh.FindHost(db, rootBucket, bucket, host)
+		result := gossh.FindHost(db, rootBucket, bucket, dbConfPath, host)
 		result.SSHConn()
 	} else if *delParam == true {
 		n := len(flag.Args())

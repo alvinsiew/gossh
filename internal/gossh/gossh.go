@@ -14,11 +14,6 @@ import (
 
 var rootBucketConf = "CONF"
 var bucketConf = "VALUE"
-var gosshCONF = "conf.db"
-var defaultUser = *configuration.GetCurrentUser()
-var defaultHome = defaultUser.HomeDir
-var gosshDir = defaultHome + "/.gossh/"
-var gosshCONFpath = gosshDir + gosshCONF
 
 // Config struct which contain hosts infomation
 type Config struct {
@@ -55,8 +50,8 @@ func SetupDB(dbFile string, rootBucket string, bucket string) (*bolt.DB, error) 
 }
 
 // ListBucket for listings all hosts and value
-func ListBucket(db *bolt.DB, rootBucket string, bucket string, arg string) {
-	findKey := GetKey()
+func ListBucket(db *bolt.DB, rootBucket string, bucket string, dbConfPath string, arg string) {
+	findKey := GetKey(dbConfPath)
 	var c Config
 	err := db.View(func(tx *bolt.Tx) error {
 		rootBucket := tx.Bucket([]byte(rootBucket)).Bucket([]byte(bucket))
@@ -72,7 +67,6 @@ func ListBucket(db *bolt.DB, rootBucket string, bucket string, arg string) {
 			} else if arg == "key" {
 				fmt.Println(string(k), "key:", string(c.Key))
 			}
-			// fmt.Println(string(k), string(c.IP), string(c.User), string(c.PortNumber), string(c.Key))
 			return err
 		})
 		if err != nil {
@@ -101,14 +95,14 @@ func ListBucketHOSTS(db *bolt.DB, rootBucket string, bucket string) {
 }
 
 // AddHosts for updating database with hosts informations
-func AddHosts(db *bolt.DB, rootBucket string, bucket string, hostname string, ip string, user string, port string, pass string, key []byte) error {
+func AddHosts(db *bolt.DB, rootBucket string, bucket string, dbConfPath string, hostname string, ip string, user string, port string, pass string, key []byte) error {
 	config := Config{IP: ip, User: user, PortNumber: port, Password: pass, Key: key}
 	configBytes, err := json.Marshal(config)
 	if err != nil {
 		return fmt.Errorf("could not marshal config json: %v", err)
 	}
 
-	findKey := GetKey()
+	findKey := GetKey(dbConfPath)
 
 	configBytes = crypto.Encrypt(configBytes, findKey)
 	err = db.Update(func(tx *bolt.Tx) error {
@@ -138,9 +132,9 @@ func AddConf(db *bolt.DB, rootBucketConf string, key string, value string) error
 }
 
 // FindHost search for host detail
-func FindHost(db *bolt.DB, rootBucket string, bucket string, host string) Config {
+func FindHost(db *bolt.DB, rootBucket string, bucket string, dbConfPath string, host string) Config {
 	var c Config
-	findKey := GetKey()
+	findKey := GetKey(dbConfPath)
 	err := db.View(func(tx *bolt.Tx) error {
 		hostDetails := tx.Bucket([]byte(rootBucket)).Bucket([]byte(bucket)).Get([]byte(host))
 		if hostDetails == nil {
@@ -195,8 +189,8 @@ func DeleteHost(db *bolt.DB, rootBucket string, bucket string, host string) erro
 }
 
 // GetKey Get sha key for encrypt and decrypt of entry
-func GetKey() string {
-	dbc, err := SetupDB(gosshCONFpath, rootBucketConf, bucketConf)
+func GetKey(dbConfPath string) string {
+	dbc, err := SetupDB(dbConfPath, rootBucketConf, bucketConf)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -220,8 +214,8 @@ func (c Config) SSHConn() {
 }
 
 // KeyGen generate sha key for conf db
-func KeyGen() error {	
-	dbc, err := SetupDB(gosshCONFpath, rootBucketConf, bucketConf)
+func KeyGen(dbConfPath string) error {	
+	dbc, err := SetupDB(dbConfPath, rootBucketConf, bucketConf)
 	if err != nil {
 		log.Fatal(err)
 	}
