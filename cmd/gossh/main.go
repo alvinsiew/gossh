@@ -88,7 +88,7 @@ func main() {
 		}
 		host := flag.Args()[0]
 		result := gossh.FindHost(db, rootBucket, bucket, host)
-		result.SSSHConn()
+		result.SSHConn()
 	} else if *delParam == true {
 		n := len(flag.Args())
 		if n == 0 {

@@ -205,8 +205,8 @@ func GetKey() string {
 	return findKey
 }
 
-// SSSHConn make ssh connection to server
-func (c Config) SSSHConn() {
+// SSHConn make ssh connection to server
+func (c Config) SSHConn() {
 	ip := c.IP
 	user := c.User
 	port := c.PortNumber
