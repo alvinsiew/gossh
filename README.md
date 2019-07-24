@@ -2,7 +2,8 @@
 
 ![Version](https://img.shields.io/github/release/alvinsiew/gossh.svg?style=flat)
 
-Command line SSH client.
+Gossh is a Secure SSH client. Private key, password, ip address, port and user will be encrypted at rest on database file.
+Gossh is also a command line SSH client.
 
 ```text
 About
