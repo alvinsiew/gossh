@@ -2,12 +2,14 @@
 
 ![Version](https://img.shields.io/github/release/alvinsiew/gossh.svg?style=flat)
 
-Command line SSH client.
+Gossh is a command line SSH client where configurations for private key, password, IP address, port and user will be stored on database file and encrypted.
+
+
 
 ```text
 About
 Support linux and mac. (Window is not working 100% currently, will try to make it workable in next version)
-Host informations etc(ip address, port, key) will be encrypted on rest in datafile.
+Host informations etc(ip address, port, key) will be encrypted on rest in database file.
 Does not require to install ssh to use Gossh.
 No installation require. Just need to copy binary to client machine.
 ```
@@ -57,32 +59,6 @@ Usage of ./gossh:
         User (default "alvinsiew")
 exit status 2
 
-$ go run cmd/gossh/main.go -h
-Usage of /var/folders/33/3_dzcxkn2wg2zvkk_l4977fc0000gn/T/go-build358610656/b001/exe/main:
-  -add
-        Add host:
-        Usage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>
-  -c    Connection to server:
-        Usage: gossh -conn <hostname>
-  -del
-        Hostname to delete
-  -host string
-        Hostname
-  -ip string
-        Adding or changing IP address for host
-  -key string
-        Setup key to for server connection. Using default key if not specific. (default "nokey")
-  -l    List all hosts config
-         -l info
-        to list more infor
-         -l key
-        to list private key
-  -pass string
-        User password
-  -port string
-        Port Number (default "22")
-  -user string
-        User (default "default user")
 ```
 
 Example:
