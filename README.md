@@ -16,7 +16,7 @@ No installation require. Just need to copy binary to client machine.
 
 ## Getting Started
 
-Copy from gossh/bin to your machine /bin folder for linux, and gossh is ready to be use.
+Copy from gossh binary to your machine /bin folder for linux, and gossh is ready to be use.
 
 To compile on your own. Please choose your own favour of os to compile.
 
