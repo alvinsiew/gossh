@@ -50,7 +50,7 @@ func main() {
 	passParam := flag.String("pass", "", "User password")
 	keyParam := flag.String("key", "nokey", "Setup key to for server connection. Using default key if not specific.")
 	listParam := flag.Bool("l", false, "List all hosts config\n -l info \nto list more infor\n -l key \nto list private key")
-	connParam := flag.Bool("c", false, "Connection to server:\nUsage: gossh -conn <hostname>\n")
+	connParam := flag.Bool("c", false, "Connection to server:\nUsage: gossh -c <hostname>\n")
 
 	flag.Parse()
 
