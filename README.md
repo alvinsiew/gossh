@@ -2,90 +2,102 @@
 
 ![Version](https://img.shields.io/github/release/alvinsiew/gossh.svg?style=flat)
 
-Gossh is a command line SSH client where configurations for private key, password, IP address, port and user will be stored on database file and encrypted.
+Gossh is a command line SSH client where configurations for private key, password, IP address, port and user will be stored in a database file and encrypted.
 
+**Note:**<br/>
+Supports Linux and MacOS. (Windows is not working 100% currently, will try to make it workable in next version)
 
+* Host information (IP address, port, key, etc) will be encrypted at rest in a database file.
+* Installation of SSH is not required to use Gossh.
+* No installation required. Just copy the binary to client machine.
 
-```text
-About
-Support linux and mac. (Window is not working 100% currently, will try to make it workable in next version)
-Host informations etc(ip address, port, key) will be encrypted on rest in database file.
-Does not require to install ssh to use Gossh.
-No installation require. Just need to copy binary to client machine.
-```
+## Install
 
-## Getting Started
+### From GitHub Releases
 
-Copy from gossh binary to your machine /bin folder for linux, and gossh is ready to be use.
+Please see [GitHub Releases](https://github.com/alvinsiew/gossh/releases).<br/>
+Available binaries are:
+* MacOS
+* Linux
 
-To compile on your own. Please choose your own favour of os to compile.
+Copy to the /bin folder of your machine for Linux or /usr/local/bin folder for MacOS, and gossh is ready to use.
+
+### go get
+
+`$ go get -u go get -u github.com/alvinsiew/gossh/cmd/gossh`
+
+### Self-compile
 
 ```bash
-Example:
-Macos
-env GOOS=darwin GOARCH=amd64 go build -o bin/64bit/darwin/gossh cmd/gossh/main.go
-Linux
-env GOOS=linux GOARCH=amd64 go build -o bin/64bit/linux/gossh cmd/gossh/main.go
-Window
-env GOOS=windows GOARCH=amd64 go build -o bin/64bit/window/gossh cmd/gossh/main.go
+$ git clone https://github.com/alvinsiew/gossh.git
+
+# MacOS
+$ env GOOS=darwin GOARCH=amd64 go build -o bin/64bit/darwin/gossh cmd/gossh/main.go
+
+# Linux
+$ env GOOS=linux GOARCH=amd64 go build -o bin/64bit/linux/gossh cmd/gossh/main.go
+
+# Window
+$ env GOOS=windows GOARCH=amd64 go build -o bin/64bit/window/gossh cmd/gossh/main.go
 ```
 
-Usage:
+## Usage
 
-```golang
-
-Usage of ./gossh:
+```bash
+$ gossh -h
+Usage of gossh:
   -add
-        Add host:
-        Usage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>
-  -c    Connection to server:
-        Usage: gossh -c <hostname>
+      Add host:
+      Usage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>
+  -c
+      Connection to server:
+      Usage: gossh -c <hostname>
   -del
-        Hostname to delete
+    	Hostname to delete
   -host string
-        Hostname
+    	Hostname
   -ip string
-        Adding or changing IP address for host
+    	Adding or changing IP address for host
   -key string
-        Setup key to for server connection. Using default key if not specific. (default "nokey")
-  -l    List all hosts config
-         -l info to list more infor
-         -l key to list private key
+    	Setup key to for server connection. Using default key if not specific. (default "nokey")
+  -l	List all hosts config
+    	 -l info
+    	to list more infor
+    	 -l key
+    	to list private key
   -pass string
-        User password
+    	User password
   -port string
-        Port Number (default "22")
+    	Port Number (default "22")
   -user string
-        User (default "alvinsiew")
-exit status 2
-
+    	User (default "alvinsiew")
 ```
 
-Example:
+## Example
 
-```golang
-To add a host:
+```bash
+# To add a host
 gossh -add -host server-test -ip 192.168.1.23 -user centos -port 22 -key /home/hello/id_rsa
 
-To remove a host:
+# To remove a host
 gossh -del server-test
 
-To list all hosts:
+# To list all hosts
 gossh -l
 
-To list more info on hosts:
+# To list more info on hosts
 gossh -l info
 
-To list host private key:
+# To list host private key
 gossh -l key
 
-To connect to host:
+#To connect to host
 gossh -c server-test
 ```
 
 ### Prerequisites
 
-No prerequistes required.
+No prerequisites required.
 
 ## License
 
