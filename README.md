@@ -47,11 +47,11 @@ $ env GOOS=windows GOARCH=amd64 go build -o bin/64bit/window/gossh cmd/gossh/mai
 $ gossh -h
 Usage of gossh:
   -add
-    	Add host:
-    	Usage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>
-  -c	Connection to server:
-    	Usage: gossh -conn <hostname>
-
+      Add host:
+      Usage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>
+  -c
+      Connection to server:
+      Usage: gossh -c <hostname>
   -del
     	Hostname to delete
   -host string
