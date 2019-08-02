@@ -19,6 +19,7 @@ var defaultUser = *config.GetCurrentUser()
 var defaultHome = defaultUser.HomeDir
 var gosshDir = defaultHome + "/.gossh/"
 var dbConfPath = gosshDir + gosshCONF
+var gosshDBpath = gosshDir + gosshDB
 
 func init() {
 	defaultUser := *config.GetCurrentUser()
@@ -36,11 +37,6 @@ func init() {
 }
 
 func main() {
-	defaultUser := *config.GetCurrentUser()
-	defaultHome := defaultUser.HomeDir
-	gosshDir := defaultHome + "/.gossh/"
-	gosshDBpath := gosshDir + gosshDB
-
 	addParam := flag.Bool("add", false, "Add host:\nUsage: gossh -add -host <hostname|mandatory> -ip <ip address|mandatory> -user <userid|non-mandatory> -port <ssh port|non-mandatory> -key <private key|non-mandatory>")
 	delParam := flag.Bool("del", false, "Hostname to delete")
 	hostParam := flag.String("host", "", "Hostname")
