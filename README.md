@@ -24,7 +24,7 @@ Copy to the /bin folder of your machine for Linux or /usr/local/bin folder for M
 
 ### go get
 
-`$ go get -u go get -u github.com/alvinsiew/gossh/cmd/gossh`
+`$ go get -u github.com/alvinsiew/gossh/cmd/gossh`
 
 ### Self-compile
 
